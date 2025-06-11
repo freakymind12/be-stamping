@@ -1,0 +1,20 @@
+services:
+  be-stamping-new:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: riankurniawan/be-stamping:1.0.0
+    container_name: be-stamping-new
+    restart: always
+    ports:
+      - 5003:5003
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - iot-stamping-network
+
+networks:
+  iot-stamping-network:
+    driver: bridge

@@ -1,0 +1,22 @@
+services:
+  be-stamping-new:
+    image: node:20
+    container_name: be-stamping-new
+    restart: always
+    working_dir: /app
+    ports:
+      - 5003:5003
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Jakarta
+    command: sh -c "npm install && npm start"
+    networks:
+      - iot-stamping-network
+
+networks:
+  iot-stamping-network:
+    driver: bridge
