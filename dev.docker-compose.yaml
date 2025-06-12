@@ -19,4 +19,4 @@ services:
 
 networks:
   iot-stamping-network:
-    driver: bridge
+    external: true
