@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: riankurniawan/be-stamping:1.0.0
+    image: riankurniawan/be-stamping:latest
     container_name: be-stamping-new
     restart: always
     ports:
