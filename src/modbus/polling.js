@@ -71,8 +71,8 @@ const startPolling = (modbusClient, addresses, interval, callback) => {
         const groupedData = groupByIndexRange(data, {
           status: [0, 3],
           production: [4, 31],
-          shot: [32, 58],
-          alarm: [59, 69],
+          shot: [32, 61],
+          alarm: [62, 73],
         });
         callback(groupedData);
         

@@ -55,6 +55,9 @@ const data = [
   "kanagata_shot_alarm1",
   "machine_shot_alarm2",
   "kanagata_shot_alarm2",
+  "tsubushi",
+  "tsubushi_shot_alarm1",
+  "tsubushi_shot_alarm2"
 ];
 const alarm = [
   "oil_level",
@@ -68,6 +71,7 @@ const alarm = [
   "menuchi_1",
   "machine_shot_1",
   "kanagata_shot_1",
+  "tsubushi_shot_1"
 ];
 
 const addressPolling = [
@@ -81,14 +85,14 @@ const addressPolling = [
   },
   {
     startAddress: 50004,
-    quantity: 55,
+    quantity: 58,
     machine: "stamping_line_1",
     type: "32bit",
     name: data
   },
   {
     startAddress: 50150,
-    quantity: 11,
+    quantity: 12,
     machine: "stamping_line_1",
     type: "16bit",
     name: alarm
@@ -103,14 +107,14 @@ const addressPolling = [
   },
   {
     startAddress: 50604,
-    quantity: 55,
+    quantity: 58,
     machine: "stamping_line_2",
     type: "32bit",
     name: data
   },
   {
     startAddress: 50750,
-    quantity: 11,
+    quantity: 12,
     machine: "stamping_line_2",
     type: "16bit",
     name: alarm
@@ -125,14 +129,14 @@ const addressPolling = [
   },
   {
     startAddress: 50904,
-    quantity: 55,
+    quantity: 58,
     machine: "stamping_line_3",
     type: "32bit",
     name: data
   },
   {
     startAddress: 51050,
-    quantity: 11,
+    quantity: 12,
     machine: "stamping_line_3",
     type: "16bit",
     name: alarm
@@ -147,14 +151,14 @@ const addressPolling = [
   },
   {
     startAddress: 51204,
-    quantity: 55,
+    quantity: 58,
     machine: "stamping_line_4",
     type: "32bit",
     name: data
   },
   {
     startAddress: 51350,
-    quantity: 11,
+    quantity: 12,
     machine: "stamping_line_4",
     type: "16bit",
     name: alarm
@@ -169,15 +173,37 @@ const addressPolling = [
   },
   {
     startAddress: 50304,
-    quantity: 55,
+    quantity: 58,
     machine: "stamping_line_8",
     type: "32bit",
     name: data
   },
   {
     startAddress: 50450,
-    quantity: 11,
+    quantity: 12,
     machine: "stamping_line_8",
+    type: "16bit",
+    name: alarm
+  },
+  // LINE 10
+  {
+    startAddress: 52700,
+    quantity: 4,
+    machine: "stamping_line_10",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 52704,
+    quantity: 58,
+    machine: "stamping_line_10",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 53150,
+    quantity: 12,
+    machine: "stamping_line_10",
     type: "16bit",
     name: alarm
   },
