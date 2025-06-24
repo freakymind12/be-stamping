@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 const planModel = require("../models/production/plan");
+const pcaModel = require("../models/production/pca")
 const productionModel = require("../models/production/production");
 
 // Fungsi untuk parsing data hasil polling
@@ -49,19 +50,15 @@ const injectProduction = async (getPollingData, shift = 1) => {
         };
 
         const plan = await planModel.getPlanByShift(filters);
+        const [pcaData] = await pcaModel.getPca({ id_pca: pca });
+        const cavity = pcaData.cavity
         const id_plan = plan?.[0]?.id_plan || null;
 
         const payload = {
-          ok: getShiftValue(formattedData, "output", shift),
-          stop_time: (
-            getShiftValue(formattedData, "stop_time", shift) / 60
-          ).toFixed(0),
-          production_time: (
-            getShiftValue(formattedData, "production_time", shift) / 60
-          ).toFixed(0),
-          dandori_time: (
-            getShiftValue(formattedData, "dandori_time", shift) / 60
-          ).toFixed(0),
+          ok: getShiftValue(formattedData, "output", shift) * cavity,
+          stop_time: (getShiftValue(formattedData, "stop_time", shift) / 60).toFixed(0),
+          production_time: (getShiftValue(formattedData, "production_time", shift) / 60).toFixed(0),
+          dandori_time: (getShiftValue(formattedData, "dandori_time", shift) / 60).toFixed(0),
           reject_setting: getShiftValue(formattedData, "reject_setting", shift),
           dummy: getShiftValue(formattedData, "dummy", shift),
           kanagata_shot: getShiftValue(formattedData, "kanagata_shot", shift),
@@ -70,12 +67,12 @@ const injectProduction = async (getPollingData, shift = 1) => {
           id_pca: pca,
           shift,
           date: dayjs()
+            .subtract(shift === 2 ? 1 : 0, 'day')
             .hour(shift === 1 ? 19 : 7)
             .minute(0)
             .second(0)
-            .format("YYYY-MM-DD HH:mm:ss"),
+            .format("YYYY-MM-DD HH:mm:ss")
         };
-
         await productionModel.createProduction(payload);
         console.log(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] [SCHEDULER] - Production for ${machineName} with id pca ${pca} shift ${shift} created`);
       } catch (error) {
