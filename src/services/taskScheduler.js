@@ -3,7 +3,7 @@ const injectProduction = require("./injectProduction");
 
 const taskScheduler = {
   productionS1(getPollingData) {
-    cron.schedule("0 25 14 * * *", async () => {
+    cron.schedule("0 5 19 * * *", async () => {
       await injectProduction(getPollingData, 1); // untuk shift 1
     });
   },
