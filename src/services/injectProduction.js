@@ -66,6 +66,7 @@ const injectProduction = async (getPollingData, shift = 1) => {
           id_plan,
           id_pca: pca,
           shift,
+          actual_spm: formattedData.speed,
           date: dayjs()
             .subtract(shift === 2 ? 1 : 0, 'day')
             .hour(shift === 1 ? 19 : 7)
