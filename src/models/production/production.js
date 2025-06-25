@@ -12,7 +12,6 @@ const productionModel = {
         dbPool.raw("(p.ok - p.ng) as ok"),
         "p.ng",
         "p.reject_setting",
-        // dbPool.raw("(p.reject_setting - p.dummy) as reject_setting"),
         "p.dummy",
         "p.production_time",
         "p.stop_time",
@@ -25,12 +24,7 @@ const productionModel = {
         "p.machine_shot",
         "p.kanagata_shot",
         "plan.id_plan",
-        dbPool.raw(
-          `TRUNCATE(
-          (p.ok - p.ng) / ((p.production_time + p.dandori_time + p.stop_time) * kanagata.cavity * pca.speed) * 100, 
-          2
-        ) as kadoritsu`
-        ),
+        dbPool.raw(`TRUNCATE(p.production_time / (p.production_time + p.dandori_time + p.stop_time) * 100, 2) as kadoritsu`),
         "plan.qty as qty_plan",
         dbPool.raw(
           `TRUNCATE(
