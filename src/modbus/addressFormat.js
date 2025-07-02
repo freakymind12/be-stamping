@@ -163,6 +163,28 @@ const addressPolling = [
     type: "16bit",
     name: alarm
   },
+  // LINE 7
+  {
+    startAddress: 52100,
+    quantity: 4,
+    machine: "stamping_line_7",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 52104,
+    quantity: 58,
+    machine: "stamping_line_7",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 52250,
+    quantity: 12,
+    machine: "stamping_line_7",
+    type: "16bit",
+    name: alarm
+  },
   // LINE 8
   {
     startAddress: 50300,
