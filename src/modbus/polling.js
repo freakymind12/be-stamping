@@ -1,6 +1,6 @@
-const { connectPLC } = require("./modbusClient");
 const { read16BitRegister, read32BitRegister } = require("./readRegister");
-const { writeRegister } = require("./writeRegister");
+const { connectPLC } = require("./connectPLC");
+const dayjs = require("dayjs");
 
 // fungsi untuk mengelompokkan data berdasarkan index range
 const groupByIndexRange = (input, ranges) => {
@@ -21,6 +21,7 @@ const groupByIndexRange = (input, ranges) => {
   return result;
 };
 
+// fungsi untuk polling multiple addresses
 const pollMultipleAddresses = async (modbusClient, addresses) => {
   const resultPerMachine = {};
 
@@ -53,21 +54,63 @@ const pollMultipleAddresses = async (modbusClient, addresses) => {
   return resultPerMachine;
 };
 
-const startPolling = (modbusClient, addresses, interval, callback) => {
-  if (!modbusClient) {
-    console.error("❌ Modbus client is not connected.");
+const startPolling = async (initialClient, addresses, interval, callback) => {
+  let modbusClient = initialClient.client;
+  let socket = initialClient.socket;
+  let isPolling = true;
+
+  // check if modbusClient and socket is connected
+  if (!modbusClient || !socket) {
+    console.error("❌ Modbus client/socket is not connected.");
     return;
   }
 
+  // check if addresses is array and not empty
   if (!Array.isArray(addresses) || addresses.length === 0) {
     console.error("❌ Invalid PLC Address array.");
     return;
   }
+  
+  // reconnect function
+  const reconnect = async () => {
+    console.warn(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] 🔄 Attempting to reconnect...`);
 
-  setInterval(async () => {
+    try {
+      const { client: newClient, socket: newSocket } = await connectPLC();
+      modbusClient = newClient;
+      socket = newSocket;
+
+      // Daftarkan kembali close listener
+      socket.on('close', () => {
+        console.warn(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ⚠️ Socket closed. Reconnecting...`);
+        isPolling = false;
+        reconnect();
+      });
+
+      isPolling = true;
+      pollLoop(); // lanjut polling setelah reconnect
+      console.log(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ✅ Reconnected to PLC`);
+
+    } catch (err) {
+      console.error(`❌ Reconnect failed: ${err.message}`);
+      setTimeout(reconnect, 3000); // coba lagi setelah 3 detik
+    }
+  };
+
+  // Deteksi jika koneksi ditutup dari awal
+  socket.on('close', () => {
+    console.warn(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] ⚠️ Socket closed. Reconnecting...`);
+    isPolling = false;
+    reconnect();
+  });
+
+  // polling loop
+  const pollLoop = async () => {
+    if (!isPolling) return;
+
     try {
       const data = await pollMultipleAddresses(modbusClient, addresses);
-      if (typeof callback === "function") {
+      if (typeof callback === 'function') {
         const groupedData = groupByIndexRange(data, {
           status: [0, 3],
           production: [4, 31],
@@ -75,13 +118,18 @@ const startPolling = (modbusClient, addresses, interval, callback) => {
           alarm: [62, 73],
         });
         callback(groupedData);
-        
       }
-      
     } catch (err) {
-      console.error("❌ Error during polling:", err.message);
+      console.error(`❌ Error during polling: ${err.message}`);
     }
-  }, interval);
+
+    // lanjut polling jika masih terkoneksi
+    if (isPolling) {
+      setTimeout(pollLoop, interval);
+    }
+  };
+
+  pollLoop(); // mulai pertama kali
 };
 
 module.exports = { startPolling };

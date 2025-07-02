@@ -1,6 +1,6 @@
 const { startPolling } = require("./polling");
 const { addressPolling } = require("./addressFormat");
-const { connectPLC } = require("./modbusClient");
+const { connectPLC } = require("./connectPLC");
 const { writeRegister } = require("./writeRegister");
 const dayjs = require("dayjs");
 require("dotenv").config();
