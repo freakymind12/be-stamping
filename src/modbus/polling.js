@@ -70,7 +70,7 @@ const startPolling = async (initialClient, addresses, interval, callback) => {
     console.error("❌ Invalid PLC Address array.");
     return;
   }
-  
+
   // reconnect function
   const reconnect = async () => {
     console.warn(`[${dayjs().format("YYYY-MM-DD HH:mm:ss")}] 🔄 Attempting to reconnect...`);
@@ -109,13 +109,13 @@ const startPolling = async (initialClient, addresses, interval, callback) => {
     if (!isPolling) return;
 
     try {
-      const data = await pollMultipleAddresses(modbusClient, addresses);
+      const data = await pollMultipleAddresses(modbusClient, addresses);      
       if (typeof callback === 'function') {
         const groupedData = groupByIndexRange(data, {
           status: [0, 3],
           production: [4, 31],
-          shot: [32, 61],
-          alarm: [62, 73],
+          shot: [32, 64],
+          alarm: [65, 76],
         });
         callback(groupedData);
       }
