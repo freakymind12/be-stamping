@@ -3,8 +3,8 @@ const writeRegister = async (client, startAddress, values) => {
     if (!Array.isArray(values) || values.some(v => typeof v !== 'number')) {
       throw new Error("Parameter 'values' harus berupa array of numbers.");
     }
-
-    const response = await client.writeMultipleRegisters(startAddress, values);
+    
+    const response = await client.client.writeMultipleRegisters(startAddress, values);
     console.log(`✅ Berhasil menulis multiple register pada start address ${startAddress}:`, values);
     return response;
   } catch (err) {
