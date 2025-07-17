@@ -1,4 +1,5 @@
 const status = ["line_number", "power_state", "stop_condition", "status_line"];
+
 const data = [
   "pca",
   "target_output",
@@ -62,6 +63,7 @@ const data = [
   "jig_cutting_shot_alarm1",
   "jig_cutting_shot_alarm2"
 ];
+
 const alarm = [
   "oil_level",
   "scrap_count_1",
@@ -77,6 +79,11 @@ const alarm = [
   "tsubushi_shot_1",
   "jig_cutting_shot_1"
 ];
+
+const other = [
+  "kanagata_reset_code",
+  "machine_feeder_mode"
+]
 
 const addressPolling = [
   // LINE 1
@@ -101,6 +108,13 @@ const addressPolling = [
     type: "16bit",
     name: alarm
   },
+  {
+    startAddress: 50190,
+    quantity: 10,
+    machine: "stamping_line_1",
+    type: "16bit",
+    name: other
+  },
   // LINE 2
   {
     startAddress: 50600,
@@ -122,6 +136,13 @@ const addressPolling = [
     machine: "stamping_line_2",
     type: "16bit",
     name: alarm
+  },
+  {
+    startAddress: 50790,
+    quantity: 10,
+    machine: "stamping_line_2",
+    type: "16bit",
+    name: other
   },
   // LINE 3
   {
@@ -145,6 +166,13 @@ const addressPolling = [
     type: "16bit",
     name: alarm
   },
+  {
+    startAddress: 51090,
+    quantity: 10,
+    machine: "stamping_line_3",
+    type: "16bit",
+    name: other
+  },
   // LINE 4
   {
     startAddress: 51200,
@@ -166,6 +194,129 @@ const addressPolling = [
     machine: "stamping_line_4",
     type: "16bit",
     name: alarm
+  },
+  {
+    startAddress: 51390,
+    quantity: 10,
+    machine: "stamping_line_4",
+    type: "16bit",
+    name: other
+  },
+  // LINE 5A
+  {
+    startAddress: 51500,
+    quantity: 4,
+    machine: "stamping_line_5A",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 51504,
+    quantity: 61,
+    machine: "stamping_line_5A",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 51650,
+    quantity: 13,
+    machine: "stamping_line_5A",
+    type: "16bit",
+    name: alarm
+  },
+  {
+    startAddress: 51690,
+    quantity: 10,
+    machine: "stamping_line_5A",
+    type: "16bit",
+    name: other
+  },
+  // LINE 5B
+  {
+    startAddress: 53000,
+    quantity: 4,
+    machine: "stamping_line_5B",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 53004,
+    quantity: 61,
+    machine: "stamping_line_5B",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 53150,
+    quantity: 13,
+    machine: "stamping_line_5B",
+    type: "16bit",
+    name: alarm
+  },
+  {
+    startAddress: 53190,
+    quantity: 10,
+    machine: "stamping_line_5B",
+    type: "16bit",
+    name: other
+  },
+  // LINE 6A
+  {
+    startAddress: 51800,
+    quantity: 4,
+    machine: "stamping_line_6A",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 51804,
+    quantity: 61,
+    machine: "stamping_line_6A",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 51950,
+    quantity: 13,
+    machine: "stamping_line_6A",
+    type: "16bit",
+    name: alarm
+  },
+  {
+    startAddress: 51990,
+    quantity: 10,
+    machine: "stamping_line_6A",
+    type: "16bit",
+    name: other
+  },
+  // LINE 6B
+  {
+    startAddress: 53300,
+    quantity: 4,
+    machine: "stamping_line_6B",
+    type: "16bit",
+    name: status
+  },
+  {
+    startAddress: 53304,
+    quantity: 61,
+    machine: "stamping_line_6B",
+    type: "32bit",
+    name: data
+  },
+  {
+    startAddress: 53450,
+    quantity: 13,
+    machine: "stamping_line_6B",
+    type: "16bit",
+    name: alarm
+  },
+  {
+    startAddress: 53490,
+    quantity: 10,
+    machine: "stamping_line_6B",
+    type: "16bit",
+    name: other
   },
   // LINE 7
   {
@@ -189,6 +340,13 @@ const addressPolling = [
     type: "16bit",
     name: alarm
   },
+  {
+    startAddress: 52290,
+    quantity: 10,
+    machine: "stamping_line_7",
+    type: "16bit",
+    name: other
+  },
   // LINE 8
   {
     startAddress: 50300,
@@ -211,6 +369,13 @@ const addressPolling = [
     type: "16bit",
     name: alarm
   },
+  {
+    startAddress: 50490,
+    quantity: 10,
+    machine: "stamping_line_8",
+    type: "16bit",
+    name: other
+  },
   // LINE 10
   {
     startAddress: 52700,
@@ -227,11 +392,18 @@ const addressPolling = [
     name: data
   },
   {
-    startAddress: 53150,
+    startAddress: 52850,
     quantity: 13,
     machine: "stamping_line_10",
     type: "16bit",
     name: alarm
+  },
+  {
+    startAddress: 52890,
+    quantity: 10,
+    machine: "stamping_line_10",
+    type: "16bit",
+    name: other
   },
 ];
 

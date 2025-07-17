@@ -112,10 +112,11 @@ const startPolling = async (initialClient, addresses, interval, callback) => {
       const data = await pollMultipleAddresses(modbusClient, addresses);      
       if (typeof callback === 'function') {
         const groupedData = groupByIndexRange(data, {
-          status: [0, 3],
-          production: [4, 31],
-          shot: [32, 64],
-          alarm: [65, 76],
+          status: [0, 3],  // range jumlah penarikan data berdasarkan status pada address format
+          production: [4, 31],  // range jumlah penarikan data berdasarkan production pada address format
+          shot: [32, 64],    // range jumlah penarikan data berdasarkan shot pada address format
+          alarm: [65, 77],  // range jumlah penarikan data berdasarkan alarm pada address format
+          other: [78, 79]   // range jumlah penarikan data berdasarkan other pada address format
         });
         callback(groupedData);
       }
