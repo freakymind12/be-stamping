@@ -25,7 +25,8 @@
     "knex": "^3.1.0",
     "mysql2": "^3.9.1",
     "net": "^1.0.2",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "node-mc_protocol": "^0.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
