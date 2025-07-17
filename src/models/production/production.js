@@ -137,9 +137,8 @@ const productionModel = {
           ),
           dbPool.raw("SUM(p.production_time) as production_time"),
           dbPool.raw("SUM(p.dandori_time) as dandori_time"),
-          dbPool.raw(
-            "TRUNCATE(SUM(p.production_time) / NULLIF(SUM(p.stop_time) + SUM(p.dandori_time) + SUM(p.production_time), 0) * 100, 1) AS kadoritsu"
-          ),
+          dbPool.raw("TRUNCATE((SUM(p.production_time) / ((16 * 60) * 20)) * 100, 1) AS kadoritsu")
+
         ])
         .innerJoin("pca", "p.id_pca", "pca.id_pca")
         .innerJoin("product", "pca.id_product", "product.id_product")
@@ -205,11 +204,12 @@ const productionModel = {
         dbPool.raw("SUM(p.production_time) AS production_time"),
         dbPool.raw("SUM(p.dandori_time) AS dandori_time"),
         dbPool.raw("SUM(p.stop_time) AS stop_time"),
-        dbPool.raw(`
-        ROUND(
-          SUM(p.production_time) / NULLIF(SUM(p.stop_time) + SUM(p.dandori_time) + SUM(p.production_time), 0) * 100, 1
-        ) AS kadoritsu
-      `)
+      //   dbPool.raw(`
+      //   ROUND(
+      //     SUM(p.production_time) / NULLIF(SUM(p.stop_time) + SUM(p.dandori_time) + SUM(p.production_time), 0) * 100, 1
+      //   ) AS kadoritsu
+      // `)
+       dbPool.raw("TRUNCATE((SUM(p.production_time) / ((16 * 60) * 20)) * 100, 1) AS kadoritsu")
       )
       .join("pca", "p.id_pca", "pca.id_pca")
       .whereBetween("p.date", [`${year}-04-01`, `${Number(year) + 1}-03-31`])
