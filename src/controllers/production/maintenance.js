@@ -27,7 +27,7 @@ const maintenanceController = {
         return handleResponse(res, "Bad Request", 400, null, errors.array());
       }
 
-      const data = await maintenanceModel.getHistoryMaintenance(req.query);
+      const data = await maintenanceModel.get(req.query);
       handleResponse(res, "Success", 200, data);
     } catch (error) {
       handleError(res, error);
