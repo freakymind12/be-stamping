@@ -34,7 +34,16 @@ const injectProduction = async (getPollingData, shift = 1) => {
 
   for (const [machineName, machineData] of Object.entries(data)) {
     const productionData = machineData?.production;
-    if (!productionData) continue;
+    const otherData = extractProductionObject(machineData?.other);
+
+    if (!productionData && !otherData) continue;
+    
+    console.log(otherData)
+
+    if(otherData.machine_feeder_mode === 1) {
+      console.log(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] [SCHEDULER] - Skip feeder machine ${machineName}`)
+      continue
+    };
 
     const formattedData = extractProductionObject(productionData);
     const pcaValues = splitPca(String(formattedData.pca));
