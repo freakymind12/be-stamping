@@ -10,6 +10,8 @@ router.get(
   kanagataController.getKanagata
 );
 
+router.get("/reset-code", authMiddleware.authenticateToken, kanagataController.getKanagataResetCode)
+
 router.post(
   "/",
   authMiddleware.authenticateToken,
@@ -37,6 +39,16 @@ router.post(
   kanagataController.createKanagata
 );
 
+router.post("/reset-code", authMiddleware.authenticateToken, [
+  check("code")
+    .not().isEmpty().withMessage("Reset code is required")
+    .isNumeric()
+    .withMessage("Reset code must be numeric")
+    .isLength({ min: 2, max: 2 })
+    .withMessage("Reset code must be exactly 2 digits"),
+  check("name").not().isEmpty().withMessage("Name kanagata part is required")
+], kanagataController.createKanagataResetCode)
+
 router.patch(
   "/:id",
   authMiddleware.authenticateToken,
@@ -63,10 +75,23 @@ router.patch(
   kanagataController.updateKanagata
 );
 
+router.patch("/reset-code/:id", authMiddleware.authenticateToken, [
+  check("code")
+    .not().isEmpty().withMessage("Reset code is required")
+    .isNumeric()
+    .withMessage("Reset code must be numeric")
+    .isLength({ min: 2, max: 2 })
+    .withMessage("Reset code must be exactly 2 digits"),
+  check("name").not().isEmpty().withMessage("Name kanagata part is required"),
+  kanagataController.updateKanagataResetCode
+])
+
 router.delete(
   "/:id",
   authMiddleware.authenticateToken,
   kanagataController.deleteKanagata
 );
+
+router.delete("/reset-code/:id", authMiddleware.authenticateToken, kanagataController.deleteKanagataResetCode)
 
 module.exports = router;
