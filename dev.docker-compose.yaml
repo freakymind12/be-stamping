@@ -1,6 +1,6 @@
 services:
   be-stamping-new:
-    image: node:20
+    image: node:20-slim
     container_name: be-stamping-new
     restart: always
     working_dir: /app
