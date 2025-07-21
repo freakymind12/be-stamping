@@ -9,7 +9,7 @@ router.post(
   authMiddleware.authenticateToken,
   [
     check("id_pca").not().isEmpty().withMessage("id_pca is required"),
-    check("id_plan").not().isEmpty().withMessage("id_plan is required"),
+    // check("id_plan").not().isEmpty().withMessage("id_plan is required"),
     check("ok")
       .not()
       .isEmpty()
