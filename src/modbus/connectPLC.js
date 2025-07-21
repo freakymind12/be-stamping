@@ -1,7 +1,6 @@
 const net = require('net');
 const modbus = require('jsmodbus');
 const dayjs = require('dayjs');
-require("dotenv").config();
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 3000; // ms

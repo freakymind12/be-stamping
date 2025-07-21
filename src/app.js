@@ -1,6 +1,5 @@
 // IMPORT MODULES
-require("dotenv").config();
-const PORT = process.env.APP_PORT || 5000;
+const PORT = process.env.APP_PORT;
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const corsConfig = require("./config/cors.js")
@@ -53,5 +52,6 @@ app.use("/api/v1", routes);
 
 // Run service REST API
 app.listen(PORT, () => {
+  console.log('Environment:', process.env.NODE_ENV);
   console.log(`Server is running on port ${PORT}`);
 });

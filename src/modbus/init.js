@@ -3,7 +3,6 @@ const { addressPolling } = require("./addressFormat");
 const { connectPLC } = require("./connectPLC");
 const { writeRegister } = require("./writeRegister");
 const dayjs = require("dayjs");
-require("dotenv").config();
 
 async function initModbusService(callback) {
   const modbusClient = await connectPLC(); // connect dulu
