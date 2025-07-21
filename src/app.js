@@ -3,7 +3,7 @@ require("dotenv").config();
 const PORT = process.env.APP_PORT || 5000;
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
+const corsConfig = require("./config/cors.js")
 const helmet = require("helmet");
 
 // IMPORT ROUTES
@@ -41,12 +41,7 @@ const middlewareHandle = require("./middleware/middlewareHandle.js");
 app.use(helmet());
 app.use(middlewareHandle.errorMessage); // error message
 app.use(middlewareHandle.logRequest); // log request
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://192.168.148.125:5173"], // ganti untuk alamat frontend nya
-    credentials: true,
-  })
-);
+app.use(corsConfig)
 
 // ALLOW JSON RESPONSE AND PUBLIC FOLDER
 app.use(cookieParser());
