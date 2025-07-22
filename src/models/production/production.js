@@ -137,8 +137,22 @@ const productionModel = {
           ),
           dbPool.raw("SUM(p.production_time) as production_time"),
           dbPool.raw("SUM(p.dandori_time) as dandori_time"),
-          dbPool.raw("TRUNCATE((SUM(p.production_time) / ((16 * 60) * 20)) * 100, 1) AS kadoritsu")
-
+          dbPool.raw("TRUNCATE((SUM(p.production_time) / ((24 * 60) * 30)) * 100, 1) AS sogo_kadoritsu"),
+          dbPool.raw(`
+            IFNULL(
+              TRUNCATE(
+                IFNULL(SUM(p.production_time), 0) / 
+                NULLIF(
+                  IFNULL(SUM(p.production_time), 0) + 
+                  IFNULL(SUM(p.stop_time), 0) + 
+                  IFNULL(SUM(p.dandori_time), 0),
+                  0
+                ) * 100,
+                1
+              ),
+              0
+            ) AS sugyou_kadoritsu
+          `)
         ])
         .innerJoin("pca", "p.id_pca", "pca.id_pca")
         .innerJoin("product", "pca.id_product", "product.id_product")
@@ -193,7 +207,7 @@ const productionModel = {
 
   getProductionFiscal: async (filters = {}) => {
     const { year, id_machine } = filters;
-    return dbPool("production as p")
+    const finalData = await dbPool("production as p")
       .select(
         dbPool.raw("YEAR(p.date) AS year"),
         dbPool.raw("MONTH(p.date) AS month"),
@@ -204,20 +218,73 @@ const productionModel = {
         dbPool.raw("SUM(p.production_time) AS production_time"),
         dbPool.raw("SUM(p.dandori_time) AS dandori_time"),
         dbPool.raw("SUM(p.stop_time) AS stop_time"),
-      //   dbPool.raw(`
-      //   ROUND(
-      //     SUM(p.production_time) / NULLIF(SUM(p.stop_time) + SUM(p.dandori_time) + SUM(p.production_time), 0) * 100, 1
-      //   ) AS kadoritsu
-      // `)
-       dbPool.raw("TRUNCATE((SUM(p.production_time) / ((16 * 60) * 20)) * 100, 1) AS kadoritsu")
+        dbPool.raw(`
+            IFNULL(
+              TRUNCATE(
+                IFNULL(SUM(p.production_time), 0) / 
+                NULLIF(
+                  IFNULL(SUM(p.production_time), 0) + 
+                  IFNULL(SUM(p.stop_time), 0) + 
+                  IFNULL(SUM(p.dandori_time), 0),
+                  0
+                ) * 100,
+                1
+              ),
+              0
+            ) AS sugyou_kadoritsu
+          `)
       )
       .join("pca", "p.id_pca", "pca.id_pca")
       .whereBetween("p.date", [`${year}-04-01`, `${Number(year) + 1}-03-31`])
       .whereNull("p.deleted_at")
       .groupByRaw("YEAR(p.date), MONTH(p.date)")
       .modify((query) => {
-        if (id_machine) query.where("pca.id_machine", id_machine);
+
+        if (id_machine) {
+          query.select(
+            dbPool.raw('TRUNCATE((SUM(p.production_time) / ((24 * 60) * 30)) * 100, 1) AS sogo_kadoritsu')
+          )
+          query.where("pca.id_machine", id_machine);
+        }
       });
+
+    if (!id_machine) {
+      const calculatedSogoKadoritsu = await dbPool
+        .from(function () {
+          this.select(
+            dbPool.raw('YEAR(p.date) AS year'),
+            dbPool.raw('MONTH(p.date) AS month'),
+            'pca.id_machine',
+            dbPool.raw('TRUNCATE((SUM(p.production_time) / ((24 * 60) * 30)) * 100, 1) AS sogo_kadoritsu')
+          )
+            .from('production as p')
+            .join('pca', 'p.id_pca', 'pca.id_pca')
+            .whereBetween('p.date', ['2025-04-01', '2026-03-31'])
+            .whereNull('p.deleted_at')
+            .groupByRaw('YEAR(p.date), MONTH(p.date), pca.id_machine')
+            .as('sub');
+        })
+        .select(
+          'year',
+          'month',
+          dbPool.raw('ROUND(AVG(sogo_kadoritsu), 1) AS sogo_kadoritsu')
+        )
+        .groupBy('year', 'month')
+        .orderBy(['year', 'month']);
+
+      finalData.forEach(item => {
+        const match = calculatedSogoKadoritsu.find(
+          sogo => sogo.year === item.year && sogo.month === item.month
+        );
+        if (match) {
+          item.sogo_kadoritsu = match.sogo_kadoritsu;
+        } else {
+          item.sogo_kadoritsu = '0'; // fallback jika tidak ditemukan
+        }
+      });
+      console.log(finalData)
+    }
+    return finalData
   },
 
   getSummarySalesandRejectCost: (filters = {}) => {
@@ -235,7 +302,7 @@ const productionModel = {
       .whereNull('p.deleted_at')
       .groupByRaw('YEAR(p.date), MONTH(p.date)')
   },
-  
+
   createProduction: (data) => {
     return dbPool("production").insert(data);
   },
