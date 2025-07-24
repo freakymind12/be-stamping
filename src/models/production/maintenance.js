@@ -30,10 +30,11 @@ const maintenanceModel = {
   },
 
   get: (filters = {}) => {
-    const { start, end, id_machine, part } = filters;
+    const { start, end, id_machine, part, id_kanagata } = filters;
     return dbPool("log_maintenance_part")
       .select(
         "id_machine",
+        "id_kanagata",
         "part",
         "shot",
         dbPool.raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as created_at")
@@ -42,9 +43,8 @@ const maintenanceModel = {
 
       .orderBy("created_at", "desc")
       .modify((query) => {
-        if (part) {
-          query.where("part", part);
-        }
+        part && query.where("part", part);
+        id_kanagata && query.where("id_kanagata", id_kanagata);
         if ((start, end)) {
           query.whereBetween("created_at", [
             start,
@@ -59,11 +59,11 @@ const maintenanceModel = {
   },
 
   update: (id_log_maintenance, data) => {
-    return dbPool("log_maintenance_part").where({id_log_maintenance}).update(data)
+    return dbPool("log_maintenance_part").where({ id_log_maintenance }).update(data)
   },
 
   delete: (id_log_maintenance) => {
-    return dbPool("log_maintenance_part").where({id_log_maintenance}).del()
+    return dbPool("log_maintenance_part").where({ id_log_maintenance }).del()
   }
 };
 
