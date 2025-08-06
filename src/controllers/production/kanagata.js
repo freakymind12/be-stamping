@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const { handleError, handleResponse } = require("../../utils/responseUtils");
 const kanagataModel = require("../../models/production/kanagata");
+const kanagataPartModel = require("../../models/production/kanagata_part")
 
 const kanagataController = {
   getKanagata: async (req, res) => {
@@ -15,6 +16,38 @@ const kanagataController = {
     try {
       const kanagataResetCode = await kanagataModel.getKanagataResetCode(req.query)
       handleResponse(res, "Success", 200, kanagataResetCode)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getKanagataPart: async (req, res) => {
+    try {
+      const kanagataPart = await kanagataPartModel.getKanagataPart(req.query)
+      handleResponse(res, "Success", 200, kanagataPart)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getPartCategory: async (req, res) => {
+    try {
+      const category = await kanagataPartModel.getCategory(req.query)
+      handleResponse(res, "Success", 200, category)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getPartRequest: async (req, res) => {
+    try {
+      const partRequest = await kanagataPartModel.getPartRequest(req.query)
+      handleResponse(res, "Success", 200, partRequest)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getPartInventory: async (req, res) => {
+    try {
+      const inventory = await kanagataPartModel.getInventoryPart(req.query)
+      handleResponse(res, "Success", 200, inventory)
     } catch (error) {
       handleError(res, error)
     }
@@ -58,6 +91,61 @@ const kanagataController = {
       handleError(res, error)
     }
   },
+  createKanagataPart: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const { id_kanagata_part } = req.body
+      const existingPart = await kanagataPartModel.getKanagataPart({ id_kanagata_part })
+
+      if (existingPart.length > 0) {
+        return handleResponse(res, "Kanagata Part with this id already exist", 400)
+      }
+
+      await kanagataPartModel.createKanagataPart(req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  createPartCategory: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      await kanagataPartModel.createCategory(req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  createPartRequest: async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      await kanagataPartModel.createPartRequest(req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  createNccPart: async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      await kanagataPartModel.createNccPart(req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
   updateKanagata: async (req, res) => {
     try {
       await kanagataModel.updateKanagata(req.params.id, req.body);
@@ -85,6 +173,59 @@ const kanagataController = {
       handleError(res, error)
     }
   },
+  updateKanagataPart: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const { id } = req.params;
+      const { id_kanagata_part } = req.body;
+
+      // Cek jika id_kanagata_part baru sudah ada di record lain
+      // tapi bukan record yang sedang di-update
+      if (id_kanagata_part) {
+        const [duplicatePart] = await kanagataPartModel.getKanagataPart({
+          id_kanagata_part,
+        });
+
+        if (duplicatePart && duplicatePart.id_kanagata_part !== id) {
+          return handleResponse(res, "ID Sparepart is already exists", 400);
+        }
+      }
+
+      await kanagataPartModel.updateKanagataPart(id, req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  updatePartCategory: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const { id } = req.params
+      await kanagataPartModel.updateCategory(id, req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  updatePartRequest: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const { id } = req.params
+      await kanagataPartModel.updatePartRequest(id, req.body)
+      handleResponse(res, "Success", 200, req.body)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
   deleteKanagata: async (req, res) => {
     try {
       const deleted = await kanagataModel.deleteKanagata(req.params.id);
@@ -107,6 +248,42 @@ const kanagataController = {
       }
     } catch (error) {
       handleError(res, error);
+    }
+  },
+  deleteKanagataPart: async (req, res) => {
+    try {
+      const deleted = await kanagataPartModel.deleteKanagataPart(req.params.id)
+      if (deleted) {
+        handleResponse(res, "Success", 200);
+      } else {
+        handleResponse(res, "Data not found", 404);
+      }
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  deletePartCategory: async (req, res) => {
+    try {
+      const deleted = await kanagataPartModel.deleteCategory(req.params.id)
+      if (deleted) {
+        handleResponse(res, "Success", 200);
+      } else {
+        handleResponse(res, "Data not found", 404);
+      }
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  deletePartRequest: async (req, res) => {
+    try {
+      const deleted = await kanagataPartModel.deletePartRequest(req.params.id)
+      if (deleted) {
+        handleResponse(res, "Success", 200);
+      } else {
+        handleResponse(res, "Data not found", 404);
+      }
+    } catch (error) {
+      handleError(res, error)
     }
   }
 };
