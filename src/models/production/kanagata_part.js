@@ -71,7 +71,7 @@ const kanagataPartModel = {
   },
 
   getPartRequest: (filters = {}) => {
-    const { id_kanagata, id_part_category, is_final } = filters
+    const { id_kanagata, id_part_category, is_final, yearmonth } = filters
     return dbPool("kanagata_part_request as kpr")
       .select("kpr.*", "kp.name", "kp.id_kanagata", "kpc.name as category", "kpn.id_ncc", "kpn.note")
       .join("kanagata_part as kp", "kpr.id_kanagata_part", "kp.id_kanagata_part")
@@ -86,6 +86,9 @@ const kanagataPartModel = {
         }
         if (is_final) {
           query.where("kpr.is_final", is_final)
+        }
+        if (yearmonth) {
+          query.whereRaw("DATE_FORMAT(kpr.po, '%Y-%m') = ?", [yearmonth])
         }
       })
   },
