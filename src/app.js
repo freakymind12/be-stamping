@@ -32,6 +32,7 @@ app.ws("/polling-data", wsHandler);
 const taskScheduler = require("./services/taskScheduler.js");
 taskScheduler.productionS1(() => pollingData);
 taskScheduler.productionS2(() => pollingData);
+taskScheduler.notifyReminderShot(() => pollingData);
 
 // IMPORT MIDDLEWARE
 const middlewareHandle = require("./middleware/middlewareHandle.js");

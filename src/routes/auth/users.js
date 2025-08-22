@@ -2,6 +2,7 @@ const express = require("express");
 const { check } = require("express-validator");
 const usersController = require("../../controllers/auth/users")
 const authMiddleware = require("../../middleware/auth");
+const { cacheMiddleware, invalidateCacheMiddleware } = require("../../middleware/cacheMiddleware");
 
 const router = express.Router();
 

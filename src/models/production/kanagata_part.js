@@ -122,6 +122,104 @@ const kanagataPartModel = {
       });
 
     return flatData
+  },
+
+  getPartUsageHistory: async (filters = {}) => {
+    const { id_kanagata_part } = filters
+    const [result] = await dbPool("kanagata_part_request as kp")
+      .select(
+        dbPool.raw("COUNT(is_used) as total_used"),
+        "kp.id_kanagata_part",
+        dbPool.raw(`JSON_ARRAYAGG(
+            JSON_OBJECT('id_request', kp.id_request, 'entry', kp.arrival, 'used_date', kp.used_date) 
+            ORDER BY kp.used_date DESC
+          ) AS used_history`)
+      )
+      .where("kp.is_used", 1)
+      .groupBy("kp.id_kanagata_part")
+      .modify((query) => {
+        if (id_kanagata_part) {
+          query.where("kp.id_kanagata_part", id_kanagata_part)
+        }
+      })
+
+    // Parse hasil used_history dari string ke JSON
+    let used_history = []
+    try {
+      used_history = result && result.used_history ? JSON.parse(result.used_history) : []
+    } catch (e) {
+      used_history = []
+    }
+    const parsedResult = {
+      ...result,
+      used_history
+    }
+
+    return parsedResult
+  },
+
+  getPartBelowSafety: async (filters = {}) => {
+    const { id_kanagata } = filters
+    const subQuery = dbPool("kanagata_part as kp")
+      .select(
+        'kp.id_kanagata',
+        'kp.id_kanagata_part',
+        'kp.name',
+        'kp.id_drawing',
+        'kpc.name as category',
+        'kp.safety_stock',
+        dbPool.raw('COUNT(kpr.id_request) AS stock')
+      )
+      .leftJoin('kanagata_part_category as kpc', 'kp.id_part_category', 'kpc.id_part_category')
+      .leftJoin('kanagata_part_request as kpr', function () {
+        this.on('kp.id_kanagata_part', '=', 'kpr.id_kanagata_part')
+          .andOn('kpr.is_used', '=', dbPool.raw('0'))
+          .andOn('kpr.is_final', '=', dbPool.raw('1'));
+      })
+      .modify((query) => {
+        if(id_kanagata != "ALL") {
+          query.where("kp.id_kanagata", id_kanagata)
+        }
+      })
+      .groupBy(
+        'kp.id_kanagata',
+        'kp.id_kanagata_part',
+        'kpc.name',
+        'kp.safety_stock'
+      )
+      .havingRaw('kp.safety_stock > stock');
+
+    const mainQuery = dbPool
+      .select(
+        'T.id_kanagata',
+        dbPool.raw(`
+        JSON_UNQUOTE(
+          JSON_ARRAYAGG(
+            JSON_OBJECT(
+              'id_kanagata_part', T.id_kanagata_part,
+              'id_drawing', T.id_drawing,
+              'name', T.name,
+              'category', T.category,
+              'safety_stock', T.safety_stock,
+              'stock', T.stock
+            )
+          )
+        ) AS parts
+      `)
+      )
+      .from(subQuery.as('T'))
+      .groupBy('T.id_kanagata');
+
+    try {
+      const result = await mainQuery
+      const parsedResult = result.map(row => ({
+        ...row,
+        parts: JSON.parse(row.parts)
+      }));
+      return parsedResult
+    } catch (error) {
+      console.error("Error fetching data part below safety", error)
+    }
   }
 }
 

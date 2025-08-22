@@ -5,7 +5,7 @@ const writeRegister = async (client, startAddress, values) => {
     }
     
     const response = await client.client.writeMultipleRegisters(startAddress, values);
-    console.log(`✅ Berhasil menulis multiple register pada start address ${startAddress}:`, values);
+    // console.log(`✅ Berhasil menulis multiple register pada start address ${startAddress}:`, values);
     return response;
   } catch (err) {
     console.error(`❌ Gagal menulis pada address ${startAddress}:`, err.message);

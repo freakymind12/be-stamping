@@ -2,6 +2,7 @@ const express = require("express");
 const productionController = require("../../controllers/production/production");
 const authMiddleware = require("../../middleware/auth");
 const { query, check } = require("express-validator");
+const { cacheMiddleware, invalidateCacheMiddleware } = require("../../middleware/cacheMiddleware");
 const router = express.Router();
 
 router.post(

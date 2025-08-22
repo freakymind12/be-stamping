@@ -2,6 +2,7 @@ const express = require("express");
 const problemController = require("../../controllers/production/problem");
 const authMiddleware = require("../../middleware/auth");
 const { check } = require("express-validator");
+const { cacheMiddleware, invalidateCacheMiddleware } = require("../../middleware/cacheMiddleware");
 const router = express.Router();
 
 router.get("/", authMiddleware.authenticateToken, problemController.getProblem);

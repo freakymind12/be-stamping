@@ -37,9 +37,6 @@ const injectProduction = async (getPollingData, shift = 1) => {
     const otherData = extractProductionObject(machineData?.other);
 
     if (!productionData && !otherData) continue;
-    
-    console.log(otherData)
-
     if(otherData.machine_feeder_mode === 1) {
       console.log(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] [SCHEDULER] - Skip feeder machine ${machineName}`)
       continue

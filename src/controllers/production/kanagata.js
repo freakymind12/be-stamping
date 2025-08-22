@@ -52,6 +52,30 @@ const kanagataController = {
       handleError(res, error)
     }
   },
+  getPartUsageHistory: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const history = await kanagataPartModel.getPartUsageHistory(req.query)
+      handleResponse(res, "Success", 200, history)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getPartBelowSafety: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return handleResponse(res, errors.array()[0].msg, 400);
+    }
+    try {
+      const data = await kanagataPartModel.getPartBelowSafety(req.query)
+      handleResponse(res, "Success", 200, data)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
   createKanagata: async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -277,6 +301,18 @@ const kanagataController = {
   deletePartRequest: async (req, res) => {
     try {
       const deleted = await kanagataPartModel.deletePartRequest(req.params.id)
+      if (deleted) {
+        handleResponse(res, "Success", 200);
+      } else {
+        handleResponse(res, "Data not found", 404);
+      }
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  deleteNccPart: async (req, res) => {
+    try {
+      const deleted = await kanagataPartModel.deleteNccPart(req.params.id)
       if (deleted) {
         handleResponse(res, "Success", 200);
       } else {

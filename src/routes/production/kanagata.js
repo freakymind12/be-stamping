@@ -1,7 +1,8 @@
 const express = require("express");
 const kanagataController = require("../../controllers/production/kanagata");
 const authMiddleware = require("../../middleware/auth");
-const { check } = require("express-validator");
+const { check, query } = require("express-validator");
+const { cacheMiddleware, invalidateCacheMiddleware } = require("../../middleware/cacheMiddleware");
 const router = express.Router();
 
 router.get("/",
@@ -27,6 +28,19 @@ router.get("/part-category",
 router.get("/part-request",
   authMiddleware.authenticateToken,
   kanagataController.getPartRequest
+)
+
+router.get("/inventory/usage-history",
+  authMiddleware.authenticateToken,
+  [
+    query("id_kanagata_part", "id kanagata part is required").not().isEmpty(),
+  ],
+  kanagataController.getPartUsageHistory,
+)
+
+router.get("/inventory/below-safety",
+  authMiddleware.authenticateToken,
+  kanagataController.getPartBelowSafety
 )
 
 router.get("/inventory",
@@ -194,5 +208,10 @@ router.delete("/part-category/:id",
 router.delete("/part-request/:id",
   authMiddleware.authenticateToken,
   kanagataController.deletePartRequest
+)
+
+router.delete("/part-request/ncc/:id",
+  authMiddleware.authenticateToken,
+  kanagataController.deleteNccPart
 )
 module.exports = router;

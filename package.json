@@ -22,10 +22,13 @@
     "jsmodbus": "^4.0.10",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
+    "lodash": "^4.17.21",
     "mysql2": "^3.9.1",
     "net": "^1.0.2",
     "node-cron": "^3.0.3",
-    "node-mc_protocol": "^0.1.7"
+    "node-mc_protocol": "^0.1.7",
+    "nodemailer": "^7.0.5",
+    "redis": "^5.8.1"
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",

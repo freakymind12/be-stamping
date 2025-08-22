@@ -2,6 +2,7 @@ const express = require("express");
 const pcaController = require("../../controllers/production/pca");
 const authMiddleware = require("../../middleware/auth");
 const { check } = require("express-validator");
+const { cacheMiddleware, invalidateCacheMiddleware } = require("../../middleware/cacheMiddleware");
 const router = express.Router();
 
 router.get("/", authMiddleware.authenticateToken, pcaController.getPca);
