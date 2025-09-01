@@ -2,6 +2,7 @@ const cron = require("node-cron");
 const injectProduction = require("./injectProduction");
 const mailReminderShot = require("./mailShotReminder")
 const redisClient = require("../config/redis")
+const { getLatestUsdExchangeRate } = require("./getLastestExchangeRate")
 
 const deleteCachedProduction = async () => {
   const pattern = "/api/v1/production/*";
@@ -32,8 +33,13 @@ const taskScheduler = {
     cron.schedule("*/1 * * * *", async () => {
       await mailReminderShot(getPollingData)
     })
-  }
+  },
 
+  dailyGetExchangeRates() {
+    cron.schedule("0 1 * * *", async () => {      
+      await getLatestUsdExchangeRate()
+    })
+  },  
 };
 
 module.exports = taskScheduler;

@@ -16,6 +16,8 @@ const problemRoutes = require("./production/problem");
 const productRoutes = require("./production/product");
 const productionRoutes = require("./production/production");
 const statusRoutes = require("./production/status");
+const exchangeRatesRoutes = require("./production/exchange_rates");
+const supplierRoutes = require("./production/supplier")
 
 // REGISTER ROUTES
 router.use("/auth", authRoutes);
@@ -30,5 +32,7 @@ router.use("/pca", pcaRoutes);
 router.use("/maintenance", maintenanceRoutes);
 router.use("/final_status", finalStatusRoutes);
 router.use("/production", productionRoutes);
+router.use("/currency", exchangeRatesRoutes);
+router.use("/supplier", supplierRoutes)
 
 module.exports = router;
