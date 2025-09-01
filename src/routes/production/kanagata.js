@@ -48,6 +48,16 @@ router.get("/inventory",
   kanagataController.getPartInventory
 )
 
+router.get("/inventory/report",
+  authMiddleware.authenticateToken,
+  kanagataController.getReportInventory
+)
+
+router.get("/inventory/report/detail",
+  authMiddleware.authenticateToken,
+  kanagataController.getInventoryReportKanagata
+)
+
 router.post("/",
   authMiddleware.authenticateToken,
   [

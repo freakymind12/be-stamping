@@ -76,6 +76,22 @@ const kanagataController = {
       handleError(res, error)
     }
   },
+  getReportInventory: async (req, res) => {
+    try {
+      const data = await kanagataPartModel.getInventoryReport(req.query)
+      handleResponse(res, "Success", 200, data)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
+  getInventoryReportKanagata: async (req, res) => {
+    try {
+      const data = await kanagataPartModel.getInventoryReportKanagata(req.query)
+      handleResponse(res, "Success", 200, data)
+    } catch (error) {
+      handleError(res, error)
+    }
+  },
   createKanagata: async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
